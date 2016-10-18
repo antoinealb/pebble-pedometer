@@ -11,53 +11,55 @@ static TextLayer *step_display_layer;
 static TextLayer *hello_display_layer;
 static int app_runing;
 
+static pedometer_t meter;
+static float filter_buffer[20];
+static float threshold_buffer[50];
 
-void init_main_window(void) 
+
+void init_main_window(void)
 {
-  	// Create main Window element and assign to pointer
-  	main_window = window_create();
+    /* Configure pedometer algorithm. */
+    meter.hysteresis = 100;
+    pedometer_init(&meter, filter_buffer, sizeof(filter_buffer)/sizeof(float),
+                   threshold_buffer, sizeof(threshold_buffer)/sizeof(float));
+
+    // Create main Window element and assign to pointer
+    main_window = window_create();
     Layer *window_layer = window_get_root_layer(main_window);
 
-		// Create background Layer
-		background_layer = text_layer_create(GRect( 0, 0, 144, 168));
-		// Setup background layer color (black)
-		text_layer_set_background_color(background_layer,GColorClear);
-  
+    // Create background Layer
+    background_layer = text_layer_create(GRect( 0, 0, 144, 168));
+    // Setup background layer color (black)
+    text_layer_set_background_color(background_layer,GColorClear);
 
-		// Create text Layer to display the steps counter
-		step_display_layer = text_layer_create(GRect( 5, 65, 67, 40));
-		// Setup layer Information
-		text_layer_set_background_color(step_display_layer, GColorBlack);
-		text_layer_set_text_color(step_display_layer, GColorWhite);
-		text_layer_set_font(step_display_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
-  	text_layer_set_text_alignment(step_display_layer, GTextAlignmentCenter);
-  
-    
+
+    // Create text Layer to display the steps counter
+    step_display_layer = text_layer_create(GRect( 5, 65, 67, 40));
+    // Setup layer Information
+    text_layer_set_background_color(step_display_layer, GColorBlack);
+    text_layer_set_text_color(step_display_layer, GColorWhite);
+    text_layer_set_font(step_display_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+    text_layer_set_text_alignment(step_display_layer, GTextAlignmentCenter);
+
+
     // Create text Layer to display a welcome text
-		hello_display_layer = text_layer_create(GRect( 20, 0, 100, 20));
-		// Setup layer Information
-		text_layer_set_background_color(hello_display_layer, GColorClear);
-		text_layer_set_text_color(hello_display_layer, GColorWhite);
-		text_layer_set_font(hello_display_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
-  	text_layer_set_text_alignment(hello_display_layer, GTextAlignmentCenter);
-    // display hello
-    static char welcome[30];
-    snprintf(welcome, 30, "HELLO");
-    text_layer_set_text(hello_display_layer, welcome);
-  
-    
+    hello_display_layer = text_layer_create(GRect( 20, 0, 100, 20));
+    // Setup layer Information
+    text_layer_set_background_color(hello_display_layer, GColorClear);
+    text_layer_set_text_color(hello_display_layer, GColorWhite);
+    text_layer_set_font(hello_display_layer, fonts_get_system_font(FONT_KEY_GOTHIC_18));
+    text_layer_set_text_alignment(hello_display_layer, GTextAlignmentCenter);
 
-  	// Add layers as childs layers to the Window's root layer
+    // Add layers as childs layers to the Window's root layer
     layer_add_child(window_layer, text_layer_get_layer(background_layer));
-	  layer_add_child(window_layer, text_layer_get_layer(step_display_layer));
+    layer_add_child(window_layer, text_layer_get_layer(step_display_layer));
     layer_add_child(window_layer, text_layer_get_layer(hello_display_layer));
-    
-  
-  	// Show the window on the watch, with animated = true
-  	window_stack_push(main_window, true);
-  
+
+    // Show the window on the watch, with animated = true
+    window_stack_push(main_window, true);
+
     init_clic_callback();
-  
+
     init_accelerometer();
 }
 
@@ -81,24 +83,20 @@ void config_provider(void* context)
 
 // event for clic up: start counting steps
 void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
-{ 
+{
     app_runing = 1;
 }
 
 // event for clic down: stop counting steps
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
-{ 
+{
     app_runing = 0;
 }
 
 // event for clic select: reset the counter
 void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    pedometer_reset(&meter);
-    
-    static char reset[60];
-    snprintf(reset, 60, "step: 0");
-    text_layer_set_text(step_display_layer, reset);
+//    pedometer_reset(&meter);
 }
 
 /*----------------------------------------------------------------------*/
@@ -119,7 +117,7 @@ void init_accelerometer(void)
 void accel_data_handler(AccelData *data, uint32_t num_samples)
 {
     uint32_t n;
-      
+
     // Send data from y axis to the podometer algorithm
     if(app_runing == ACTIVE)
     {
@@ -127,7 +125,7 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
         {
             pedometer_process(&meter,data[n].y);
         }
-      
+
         // Print the results on the watch
         int steps = pedometer_get_step_count(&meter);
         static char results[60];
@@ -142,12 +140,12 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
 
 // deinit function called when the app is closed
 void deinit(void) {
-  
-    // Destroy layers and main window 
+
+    // Destroy layers and main window
     text_layer_destroy(background_layer);
-	  text_layer_destroy(step_display_layer);
+    text_layer_destroy(step_display_layer);
     window_destroy(main_window);
-  
+
     // Stop Accelerometer
     accel_data_service_unsubscribe();
 }
