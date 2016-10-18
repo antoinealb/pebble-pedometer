@@ -12,8 +12,8 @@ static TextLayer *hello_display_layer;
 static int app_runing;
 
 static pedometer_t meter;
-static float filter_buffer[20];
-static float threshold_buffer[50];
+static float filter_buffer[2];
+static float threshold_buffer[5];
 
 
 void init_main_window(void)
