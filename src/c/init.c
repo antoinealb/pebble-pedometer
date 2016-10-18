@@ -3,13 +3,12 @@
 #include "pedometer.h"
 
 #define NUM_SAMPLE 100
-#define ACTIVE 1
 
 static Window *main_window;
 static TextLayer *background_layer;
 static TextLayer *step_display_layer;
 static TextLayer *hello_display_layer;
-static int app_runing;
+static int app_running;
 
 static pedometer_t meter;
 static float filter_buffer[10];
@@ -20,7 +19,7 @@ void init_main_window(void)
 {
     memset(filter_buffer, 0, sizeof(filter_buffer));
     memset(threshold_buffer, 0, sizeof(threshold_buffer));
-    
+
     /* Configure pedometer algorithm. */
     pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
                    threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
@@ -88,13 +87,13 @@ void config_provider(void* context)
 // event for clic up: start counting steps
 void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    app_runing = 1;
+    app_running = 1;
 }
 
 // event for clic down: stop counting steps
 void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    app_runing = 0;
+    app_running = 0;
 }
 
 // event for clic select: reset the counter
@@ -123,16 +122,17 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
     uint32_t n;
 
     // Send data from y axis to the podometer algorithm
-    if (app_runing == ACTIVE) {
+    if (app_running) {
         for (n = 0; n < num_samples; n++) {
             pedometer_process(&meter, data[n].z);
         }
 
         // Print the results on the watch
         int steps = pedometer_get_step_count(&meter);
+
         static char results[60];
-        snprintf(results, sizeof(results), "steps=%d %c", steps, meter.state == PEDOMETER_ACC_RISING ? 'u' : 'd');
-        //snprintf(results, 60, "x:%d y:%d z:%d", (int)data[0].x, (int)data[0].y, (int)data[0].z);
+        snprintf(results, sizeof(results), "%d steps", steps);
+
         text_layer_set_text(step_display_layer, results);
     }
 }
@@ -150,7 +150,6 @@ void deinit(void)
     text_layer_destroy(step_display_layer);
     window_destroy(main_window);
 
-    // Stop Accelero
-    
+    // Stop Accelerometer
     accel_data_service_unsubscribe();
 }
