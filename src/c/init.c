@@ -2,7 +2,7 @@
 #include "init.h"
 #include "pedometer.h"
 
-#define NUM_SAMPLE 25
+#define NUM_SAMPLE 100
 #define ACTIVE 1
 
 static Window *main_window;
@@ -12,16 +12,20 @@ static TextLayer *hello_display_layer;
 static int app_runing;
 
 static pedometer_t meter;
-static float filter_buffer[2];
-static float threshold_buffer[5];
+static float filter_buffer[10];
+static float threshold_buffer[25];
 
 
 void init_main_window(void)
 {
+    memset(filter_buffer, 0, sizeof(filter_buffer));
+    memset(threshold_buffer, 0, sizeof(threshold_buffer));
+    
     /* Configure pedometer algorithm. */
-    meter.hysteresis = 100;
     pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
                    threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
+    meter.hysteresis = 75;
+
 
     // Create main Window element and assign to pointer
     main_window = window_create();
@@ -96,7 +100,7 @@ void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 // event for clic select: reset the counter
 void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-//    pedometer_reset(&meter);
+    meter.steps = 0;
 }
 
 /*----------------------------------------------------------------------*/
@@ -108,9 +112,9 @@ void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 void init_accelerometer(void)
 {
     // Allow accelerometer event
-    accel_data_service_subscribe(NUM_SAMPLE, accel_data_handler);
+    accel_data_service_subscribe(10, accel_data_handler);
     // Define accelerometer sampling rate
-    accel_service_set_sampling_rate(ACCEL_SAMPLING_25HZ);
+    accel_service_set_sampling_rate(ACCEL_SAMPLING_100HZ);
 }
 
 // Function called every second that get data from the accelerometer
@@ -121,13 +125,14 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
     // Send data from y axis to the podometer algorithm
     if (app_runing == ACTIVE) {
         for (n = 0; n < num_samples; n++) {
-            pedometer_process(&meter, data[n].y);
+            pedometer_process(&meter, data[n].z);
         }
 
         // Print the results on the watch
         int steps = pedometer_get_step_count(&meter);
         static char results[60];
-        snprintf(results, 60, "step: %d", steps);
+        snprintf(results, sizeof(results), "steps=%d %c", steps, meter.state == PEDOMETER_ACC_RISING ? 'u' : 'd');
+        //snprintf(results, 60, "x:%d y:%d z:%d", (int)data[0].x, (int)data[0].y, (int)data[0].z);
         text_layer_set_text(step_display_layer, results);
     }
 }
@@ -145,6 +150,7 @@ void deinit(void)
     text_layer_destroy(step_display_layer);
     window_destroy(main_window);
 
-    // Stop Accelerometer
+    // Stop Accelero
+    
     accel_data_service_unsubscribe();
 }
