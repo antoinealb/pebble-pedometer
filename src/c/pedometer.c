@@ -3,8 +3,8 @@
 #include "adaptive_threshold.h"
 
 void pedometer_init(pedometer_t *p,
-                    int *filter_buffer, unsigned long int filter_buffer_sz,
-                    int *threshold_buffer, unsigned long int threshold_buffer_sz)
+                    float *filter_buffer, unsigned int filter_buffer_sz,
+                    float *threshold_buffer, unsigned int threshold_buffer_sz)
 {
     p->filter_buffer = filter_buffer;
     p->filter_buffer_sz = filter_buffer_sz;
@@ -15,9 +15,9 @@ void pedometer_init(pedometer_t *p,
     p->hysteresis = 0.;
 }
 
-void pedometer_process(pedometer_t *p, int sample)
+void pedometer_process(pedometer_t *p, float sample)
 {
-    int acc_filt, acc_thr;
+    float acc_filt, acc_thr;
     acc_filt = lowpass_process(p->filter_buffer, p->filter_buffer_sz, sample);
     acc_thr = adaptive_threshold_process(p->threshold_buffer,
                                          p->threshold_buffer_sz,
@@ -35,10 +35,3 @@ unsigned int pedometer_get_step_count(pedometer_t *p)
 {
     return p->steps;
 }
-
-void pedometer_reset(pedometer_t *p)
-{
-    p->steps = 0;
-}
-
-

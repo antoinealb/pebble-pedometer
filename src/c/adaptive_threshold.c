@@ -2,10 +2,10 @@
 #include "adaptive_threshold.h"
 #include "moving_window.h"
 
-int adaptive_threshold_process(int *buffer, unsigned long int buffer_sz, int sample)
+float adaptive_threshold_process(float *buffer, unsigned int buffer_sz, float sample)
 {
-    int min, max;
-    unsigned long int i;
+    float min, max;
+    unsigned int i;
 
     moving_window_append(buffer, buffer_sz, sample);
 
@@ -21,5 +21,3 @@ int adaptive_threshold_process(int *buffer, unsigned long int buffer_sz, int sam
 
     return 0.5 * (max - min) + min;
 }
-
-

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef ADAPTIVE_THRESHOLD_H
 #define ADAPTIVE_THRESHOLD_H
 
@@ -6,7 +5,7 @@
 extern "C" {
 #endif
 
-int adaptive_threshold_process(int *buffer, unsigned long int buffer_sz, int sample);
+float adaptive_threshold_process(float *buffer, unsigned int buffer_sz, float sample);
 
 #ifdef __cplusplus
 }

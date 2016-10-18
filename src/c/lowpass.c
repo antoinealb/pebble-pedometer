@@ -1,10 +1,10 @@
 #include "lowpass.h"
 #include "moving_window.h"
 
-int lowpass_process(int *buffer, unsigned long int buffer_sz, int sample)
+float lowpass_process(float *buffer, unsigned int buffer_sz, float sample)
 {
-    int sum = 0.;
-    unsigned long int i;
+    float sum = 0.;
+    unsigned int i;
 
     moving_window_append(buffer, buffer_sz, sample);
 

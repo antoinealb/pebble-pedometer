@@ -1,4 +1,3 @@
-#pragma once
 #ifndef LOWPASS_H
 #define LOWPASS_H
 
@@ -6,7 +5,7 @@
 extern "C" {
 #endif
 
-int lowpass_process(int *buffer, unsigned long int buffer_sz, int sample);
+float lowpass_process(float *buffer, unsigned int buffer_sz, float sample);
 
 #ifdef __cplusplus
 }

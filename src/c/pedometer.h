@@ -1,4 +1,3 @@
-#pragma once
 #ifndef PEDOMETER_H
 #define PEDOMETER_H
 
@@ -12,27 +11,23 @@ typedef enum {
 } pedometer_state_t;
 
 typedef struct {
-    int *filter_buffer;
-    unsigned long int filter_buffer_sz;
-    int *threshold_buffer;
-    unsigned long int threshold_buffer_sz;
+    float *filter_buffer;
+    unsigned int filter_buffer_sz;
+    float *threshold_buffer;
+    unsigned int threshold_buffer_sz;
     pedometer_state_t state;
     unsigned int steps;
-    int hysteresis;
+    float hysteresis;
 } pedometer_t;
 
 void pedometer_init(pedometer_t *p,
-                    int *filter_buffer, unsigned long int filter_buffer_sz,
-                    int *threshold_buffer, unsigned long int threshold_buffer_sz);
+                    float *filter_buffer, unsigned int filter_buffer_sz,
+                    float *threshold_buffer, unsigned int threshold_buffer_sz);
 
 
-void pedometer_process(pedometer_t *p, int sample);
+void pedometer_process(pedometer_t *p, float sample);
 
 unsigned int pedometer_get_step_count(pedometer_t *p);
-  
-void pedometer_reset(pedometer_t *p);
-
-pedometer_t meter;
 
 #ifdef __cplusplus
 }

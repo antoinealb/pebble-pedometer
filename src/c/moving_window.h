@@ -1,4 +1,3 @@
-#pragma once
 #ifndef MOVING_WINDOW_H
 #define MOVING_WINDOW_H
 
@@ -8,11 +7,11 @@ extern "C" {
 
 /** Appends an element to the end of a moving window.
  *
- * @param [in] buffer The int array to use for storing the elements.
+ * @param [in] buffer The float array to use for storing the elements.
  * @param [in] nel The number of elements in the buffer, in bytes.
  * @param [in] value The value to append.
  */
-void moving_window_append(int *buffer, unsigned long int buffer_sz, int value);
+void moving_window_append(float *buffer, unsigned int buffer_sz, float value);
 
 
 #ifdef __cplusplus
