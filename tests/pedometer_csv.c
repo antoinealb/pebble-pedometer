@@ -19,8 +19,8 @@ int main(int argc, char **argv)
     float filter_buffer[20];
     float threshold_buffer[50];
     pedometer_init(&meter,
-                   filter_buffer, sizeof(filter_buffer)/sizeof(float),
-                   threshold_buffer, sizeof(threshold_buffer)/sizeof(float));
+                   filter_buffer, sizeof(filter_buffer) / sizeof(float),
+                   threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
 
     meter.hysteresis = 0.1;
 

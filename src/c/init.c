@@ -20,8 +20,8 @@ void init_main_window(void)
 {
     /* Configure pedometer algorithm. */
     meter.hysteresis = 100;
-    pedometer_init(&meter, filter_buffer, sizeof(filter_buffer)/sizeof(float),
-                   threshold_buffer, sizeof(threshold_buffer)/sizeof(float));
+    pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
+                   threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
 
     // Create main Window element and assign to pointer
     main_window = window_create();
@@ -30,7 +30,7 @@ void init_main_window(void)
     // Create background Layer
     background_layer = text_layer_create(GRect( 0, 0, 144, 168));
     // Setup background layer color (black)
-    text_layer_set_background_color(background_layer,GColorClear);
+    text_layer_set_background_color(background_layer, GColorClear);
 
 
     // Create text Layer to display the steps counter
@@ -119,11 +119,9 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
     uint32_t n;
 
     // Send data from y axis to the podometer algorithm
-    if(app_runing == ACTIVE)
-    {
-        for (n=0; n < num_samples; n++)
-        {
-            pedometer_process(&meter,data[n].y);
+    if (app_runing == ACTIVE) {
+        for (n = 0; n < num_samples; n++) {
+            pedometer_process(&meter, data[n].y);
         }
 
         // Print the results on the watch
@@ -139,7 +137,8 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
 
 
 // deinit function called when the app is closed
-void deinit(void) {
+void deinit(void)
+{
 
     // Destroy layers and main window
     text_layer_destroy(background_layer);
