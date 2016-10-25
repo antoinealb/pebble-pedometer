@@ -5,6 +5,14 @@
 extern "C" {
 #endif
 
+/** Process a single value for the low pass filter and returns the processed value.
+ *
+ * @param [in] buffer The float array to use for storing the elements.
+ * @param [in] nel The number of elements in the buffer, in bytes.
+ * @param [in] value The value to append.
+ *
+ * @note The cutoff frequency is given by the buffer size.
+ */
 float lowpass_process(float *buffer, unsigned int buffer_sz, float sample);
 
 #ifdef __cplusplus
