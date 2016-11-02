@@ -9,7 +9,6 @@ static Window *main_window;
 static Layer *s_canvas_layer;
 
 static int app_running;
-static int steps;
 
 static pedometer_t meter;
 static float filter_buffer[10];
@@ -40,7 +39,6 @@ void init_main_window(void)
 
 
     app_running = 0;
-    steps = 0;
 
     // Create main Window element and assign to pointer
     main_window = window_create();
@@ -128,7 +126,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     GFont font = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
     graphics_context_set_text_color(ctx, GColorBlack);
     char text_top[10];
-    snprintf(text_top, sizeof(text_top), "%d", steps);
+    snprintf(text_top, sizeof(text_top), "%d", pedometer_get_step_count(&meter));
     char *text_bottom = "steps";
 
     // Determine a reduced bounding box
@@ -256,7 +254,6 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
         }
 
         // Print the results on the watch
-        steps = pedometer_get_step_count(&meter);
         layer_mark_dirty(s_canvas_layer);
     }
 }
