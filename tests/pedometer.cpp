@@ -29,6 +29,19 @@ TEST(PedometerTestGroup, CanInit)
     CHECK_EQUAL(0, pedometer_get_step_count(&pedometer));
 }
 
+TEST(PedometerTestGroup, CanSetHysteresis)
+{
+    pedometer_set_hysteresis(&pedometer, 10);
+    CHECK_EQUAL(10, pedometer.hysteresis);
+}
+
+TEST(PedometerTestGroup, CanReset)
+{
+    pedometer.steps = 1234;
+    pedometer_reset_step_count(&pedometer);
+    CHECK_EQUAL(0, pedometer.steps);
+}
+
 TEST(PedometerTestGroup, CanProcessRising)
 {
     pedometer_process(&pedometer, 1.);

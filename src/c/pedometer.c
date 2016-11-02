@@ -15,6 +15,16 @@ void pedometer_init(pedometer_t *p,
     p->hysteresis = 0.;
 }
 
+void pedometer_set_hysteresis(pedometer_t *p, float hysteresis)
+{
+    p->hysteresis = hysteresis;
+}
+
+void pedometer_reset_step_count(pedometer_t *p)
+{
+    p->steps = 0;
+}
+
 void pedometer_process(pedometer_t *p, float sample)
 {
     float acc_filt, acc_thr;

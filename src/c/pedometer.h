@@ -50,6 +50,12 @@ void pedometer_process(pedometer_t *p, float sample);
 /** Returns the number of steps by the given pedometer. */
 unsigned int pedometer_get_step_count(pedometer_t *p);
 
+/** Sets the hysteresis used for adaptive thresholding. */
+void pedometer_set_hysteresis(pedometer_t *p, float hysteresis);
+
+/** Reset the step count. */
+void pedometer_reset_step_count(pedometer_t *p);
+
 #ifdef __cplusplus
 }
 #endif

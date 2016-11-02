@@ -36,7 +36,8 @@ void init_main_window(void)
     /* Configure pedometer algorithm. */
     pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
                    threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
-    meter.hysteresis = 75;
+    pedometer_set_hysteresis(&meter, 75);
+
 
     app_running = 0;
     steps = 0;
@@ -202,7 +203,7 @@ void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 // event for clic select: reset the counter
 void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    meter.steps = 0;
+    pedometer_reset_step_count(&meter);
 }
 
 /*----------------------------------------------------------------------*/
