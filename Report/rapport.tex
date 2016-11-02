@@ -124,4 +124,12 @@ It is also pretty insensitive to variations in physical parameters across users.
     \label{fig:steps}
 \end{figure}
 
+\section{Implementation notes}
+The processing code was first written in Python, then in C.
+The code was written to be very portable by separating platform-dependent code from processing functions.
+This allows the code to be tested on a development machine, which increases development velocity.
+
+We also wrote some unit tests for the processing code (under the ``tests'' folder).
+This prevents bug and reduces time spent debugging on the Pebble.
+
 \end{document}
