@@ -5,8 +5,15 @@
 
 static Window *main_window;
 static Layer *s_canvas_layer;
+static BitmapLayer *reset_bitmap_layer;
+static BitmapLayer *play_bitmap_layer;
+static BitmapLayer *pause_bitmap_layer;
 
 static unsigned int step_count = 0;
+static GBitmap *play_bitmap;
+static GBitmap *pause_bitmap;
+static GBitmap *reset_bitmap;
+
 
 static void init_clic_callback(void);
 static void config_provider(void* context);
@@ -35,6 +42,36 @@ void init_main_window(void)
     // Add to Window
     layer_add_child(window_get_root_layer(main_window), s_canvas_layer);
 
+    //bitmap for reset arrows
+    reset_bitmap = gbitmap_create_with_resource(RESOURCE_ID_RESET_ARROWS);
+
+    reset_bitmap_layer = bitmap_layer_create(GRect(123, 135, 20, 20));
+    bitmap_layer_set_compositing_mode(reset_bitmap_layer, GCompOpSet);
+    bitmap_layer_set_bitmap(reset_bitmap_layer, reset_bitmap);
+    
+    layer_add_child(window_get_root_layer(main_window), 
+                    bitmap_layer_get_layer(reset_bitmap_layer));
+    
+    //Bitmap for play
+    play_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PLAY_BUTTON);
+
+    play_bitmap_layer = bitmap_layer_create(GRect(123, 2, 20, 20));
+    bitmap_layer_set_compositing_mode(play_bitmap_layer, GCompOpSet);
+    bitmap_layer_set_bitmap(play_bitmap_layer, play_bitmap);
+    
+    layer_add_child(window_get_root_layer(main_window), 
+                    bitmap_layer_get_layer(play_bitmap_layer));
+    
+    //Bitmap for pause
+    pause_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PAUSE_BUTTON);
+
+    pause_bitmap_layer = bitmap_layer_create(GRect(123, 24, 20, 20));
+    bitmap_layer_set_compositing_mode(pause_bitmap_layer, GCompOpSet);
+    bitmap_layer_set_bitmap(pause_bitmap_layer, pause_bitmap);
+    
+    layer_add_child(window_get_root_layer(main_window), 
+                    bitmap_layer_get_layer(pause_bitmap_layer));
+    
     // Show the window on the watch, with animated = true
     window_stack_push(main_window, true);
 
@@ -88,11 +125,11 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     graphics_fill_rect(ctx, step_rect_bounds, corner_radius, GCornersAll);
 
     // Draw the 2 rectangles to indicate the functions of the buttons
-    GRect top_rect_bounds = GRect(124, 0, 20, 40);
+    GRect top_rect_bounds = GRect(122, 0, 22, 48);
     draw_rect(ctx, top_rect_bounds, corner_radius, GCornersBottom & GCornersLeft);
     graphics_fill_rect(ctx, top_rect_bounds, corner_radius, GCornersBottom & GCornersLeft);
 
-    GRect bottom_rect_bounds = GRect(124, 128, 20, 40);
+    GRect bottom_rect_bounds = GRect(122, 128, 22, 40);
     draw_rect(ctx, bottom_rect_bounds, corner_radius, GCornersTop & GCornersLeft);
 
     // Write the initial textstep
@@ -119,35 +156,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
                        GTextAlignmentCenter, NULL);
 
     graphics_context_set_stroke_width(ctx, 5);
-    // Draw the info about what action each button perform
-
-    // Play-Pause button
-    GPoint top = GPoint(130, 6);
-    GPoint bottom = GPoint(130, 14);
-    GPoint right = GPoint(138, 10);
-    draw_triangle(ctx, top, bottom, right);
-
-    GPoint top_l = GPoint(130, 22);
-    GPoint bottom_l = GPoint(130, 30);
-    GPoint top_r = GPoint(138, 22);
-    GPoint bottom_r = GPoint(138, 30);
-    draw_pause(ctx, top_l, bottom_l, top_r, bottom_r);
-
-    // Reset button
-
-    int32_t angle_start = DEG_TO_TRIGANGLE(0);
-    int32_t angle_end = DEG_TO_TRIGANGLE(300);
-
-    // Create smaller bounds than the container
-    GRect reset_symbol_bounds = GRect(bottom_rect_bounds.origin.x + 3,
-                                      bottom_rect_bounds.origin.y + 2,
-                                      bottom_rect_bounds.size.w - 6,
-                                      bottom_rect_bounds.size.h - 4);
-    // Draw an arc
-    graphics_draw_arc(ctx, reset_symbol_bounds, GOvalScaleModeFitCircle,
-                      angle_start, angle_end);
-
-
+    
 }
 
 /*--------------------------- Clic fonctions --------------------------*/
@@ -199,6 +208,15 @@ static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
 // deinit function called when the app is closed
 void deinit(void)
 {
+    //destroy the bitmaps
+    gbitmap_destroy(pause_bitmap);
+    bitmap_layer_destroy(pause_bitmap_layer);
+    
+    gbitmap_destroy(reset_bitmap);
+    bitmap_layer_destroy(reset_bitmap_layer);
+    
+    gbitmap_destroy(play_bitmap);
+    bitmap_layer_destroy(play_bitmap_layer);
     // Destroy layers and main window
     window_destroy(main_window);
 }
