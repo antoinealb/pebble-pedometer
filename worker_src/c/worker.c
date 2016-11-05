@@ -10,7 +10,7 @@ static void accelerometer_init(void);
 static void accelerometer_cb(AccelData *data, uint32_t num_samples);
 static void worker_message_cb(uint16_t type, AppWorkerMessage *message);
 
-static int meter_running;
+static bool meter_running = true;
 
 static void accelerometer_init(void)
 {
@@ -71,7 +71,7 @@ static void worker_init()
 
     app_worker_message_subscribe(worker_message_cb);
 
-    meter_running = 1;
+    meter_running = true;
 }
 
 
