@@ -10,6 +10,8 @@ static void accelerometer_init(void);
 static void accelerometer_cb(AccelData *data, uint32_t num_samples);
 static void worker_message_cb(uint16_t type, AppWorkerMessage *message);
 
+static int meter_running;
+
 static void accelerometer_init(void)
 {
     // Allow accelerometer event
@@ -24,8 +26,10 @@ static void accelerometer_cb(AccelData *data, uint32_t num_samples)
     uint32_t n;
 
     // Send data from y axis to the podometer algorithm
-    for (n = 0; n < num_samples; n++) {
-        pedometer_process(&meter, data[n].z);
+    if (meter_running) {
+        for (n = 0; n < num_samples; n++) {
+            pedometer_process(&meter, data[n].z);
+        }
     }
 
     AppWorkerMessage message = {
@@ -41,6 +45,10 @@ static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
     switch (type) {
         case MESSAGE_STEP_RESET:
             pedometer_reset_step_count(&meter);
+            break;
+
+        case MESSAGE_PLAY_PAUSE:
+            meter_running = !meter_running;
             break;
 
         default:
@@ -62,6 +70,8 @@ static void worker_init()
     accelerometer_init();
 
     app_worker_message_subscribe(worker_message_cb);
+
+    meter_running = 1;
 }
 
 

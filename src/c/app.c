@@ -6,8 +6,6 @@
 static Window *main_window;
 static Layer *s_canvas_layer;
 
-static int app_running;
-
 static unsigned int step_count = 0;
 
 static void init_clic_callback(void);
@@ -24,8 +22,6 @@ static void worker_message_cb(uint16_t type, AppWorkerMessage *message);
 
 void init_main_window(void)
 {
-    app_running = 0;
-
     // Create main Window element and assign to pointer
     main_window = window_create();
     GRect bounds = layer_get_bounds(window_get_root_layer(main_window));
@@ -171,7 +167,11 @@ static void config_provider(void* context)
 // event for clic up: start/stop counting steps
 static void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    app_running = !app_running;
+    AppWorkerMessage message;
+
+    // Send the data to the background app
+    app_worker_send_message(MESSAGE_PLAY_PAUSE, &message);
+
 }
 
 // event for clic down: reset the counter

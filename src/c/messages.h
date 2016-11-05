@@ -5,6 +5,7 @@
 enum {
     MESSAGE_STEP_COUNT=0,
     MESSAGE_STEP_RESET=1,
+    MESSAGE_PLAY_PAUSE=2,
 };
 
 #endif
