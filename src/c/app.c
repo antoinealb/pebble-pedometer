@@ -1,7 +1,5 @@
 #include <pebble.h>
-#include "init.h"
 #include "pedometer.h"
-#include "init_intern.h"
 
 #define NUM_SAMPLE 100
 
