@@ -8,6 +8,7 @@ static float threshold_buffer[25];
 
 static void accelerometer_init(void);
 static void accelerometer_cb(AccelData *data, uint32_t num_samples);
+static void worker_message_cb(uint16_t type, AppWorkerMessage *message);
 
 static void accelerometer_init(void)
 {
@@ -35,6 +36,18 @@ static void accelerometer_cb(AccelData *data, uint32_t num_samples)
     app_worker_send_message(MESSAGE_STEP_COUNT, &message);
 }
 
+static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
+{
+    switch (type) {
+        case MESSAGE_STEP_RESET:
+            pedometer_reset_step_count(&meter);
+            break;
+
+        default:
+            break;
+    }
+}
+
 static void worker_init()
 {
     // Zeroes data processing filters
@@ -45,9 +58,12 @@ static void worker_init()
     pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
                    threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
     pedometer_set_hysteresis(&meter, 75);
-    
+
     accelerometer_init();
+
+    app_worker_message_subscribe(worker_message_cb);
 }
+
 
 static void worker_deinit()
 {

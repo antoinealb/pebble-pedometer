@@ -184,7 +184,10 @@ static void down_single_click_handler(ClickRecognizerRef recognizer, void *conte
 // event for clic select: reset the counter
 static void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    // pedometer_reset_step_count(&meter);
+    AppWorkerMessage message;
+
+    // Send the data to the background app
+    app_worker_send_message(MESSAGE_STEP_RESET, &message);
 }
 
 static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
