@@ -105,7 +105,6 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     char text_top[10];
     snprintf(text_top, sizeof(text_top), "%d", step_count);
     char *text_bottom = "steps";
->>>>>>> Use background worker for accelerometer processing
 
     // Determine a reduced bounding box
     GRect txt_top_bounds = GRect(step_rect_bounds.origin.x,
