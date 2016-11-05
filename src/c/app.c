@@ -43,7 +43,7 @@ void init_main_window(void)
     // Add to Window
     layer_add_child(window_get_root_layer(main_window), s_canvas_layer);
 
-    //bitmap for reset arrows
+    // bitmap for reset arrows
     reset_bitmap = gbitmap_create_with_resource(RESOURCE_ID_RESET_ARROWS);
 
     reset_bitmap_layer = bitmap_layer_create(GRect(123, 135, 20, 20));
@@ -53,7 +53,7 @@ void init_main_window(void)
     layer_add_child(window_get_root_layer(main_window),
                     bitmap_layer_get_layer(reset_bitmap_layer));
 
-    //Bitmap for play
+    // Bitmap for play
     play_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PLAY_BUTTON);
 
     play_bitmap_layer = bitmap_layer_create(GRect(123, 2, 20, 20));
@@ -61,7 +61,7 @@ void init_main_window(void)
     bitmap_layer_set_bitmap(play_bitmap_layer, play_bitmap);
 
 
-    //Bitmap for pause
+    // Bitmap for pause
     pause_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PAUSE_BUTTON);
 
     pause_bitmap_layer = bitmap_layer_create(GRect(123, 24, 20, 20));
@@ -199,7 +199,7 @@ static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
 // deinit function called when the app is closed
 void deinit(void)
 {
-    //destroy the bitmaps
+    // destroy the bitmaps
     gbitmap_destroy(pause_bitmap);
     bitmap_layer_destroy(pause_bitmap_layer);
 
