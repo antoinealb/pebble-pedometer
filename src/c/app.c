@@ -1,5 +1,4 @@
 #include <pebble.h>
-#include "pedometer.h"
 
 #define NUM_SAMPLE 100
 
@@ -8,12 +7,10 @@ static Layer *s_canvas_layer;
 
 static int app_running;
 
-static pedometer_t meter;
-static float filter_buffer[10];
-static float threshold_buffer[25];
 
 static void init_clic_callback(void);
 static void config_provider(void* context);
+
 static void up_single_click_handler(ClickRecognizerRef recognizer, void *context);
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context);
 static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMask mask);
@@ -21,21 +18,9 @@ static void canvas_update_proc(Layer *layer, GContext *ctx);
 static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right);
 static void draw_pause(GContext *ctx, GPoint top_l, GPoint bottom_l, GPoint top_r, GPoint bottom_r);
 
-static void init_accelerometer(void);
-static void accel_data_handler(AccelData *data, uint32_t num_samples);
 
 void init_main_window(void)
 {
-    // The strings for the button layers
-    memset(filter_buffer, 0, sizeof(filter_buffer));
-    memset(threshold_buffer, 0, sizeof(threshold_buffer));
-
-    /* Configure pedometer algorithm. */
-    pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
-                   threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
-    pedometer_set_hysteresis(&meter, 75);
-
-
     app_running = 0;
 
     // Create main Window element and assign to pointer
@@ -51,14 +36,10 @@ void init_main_window(void)
     // Add to Window
     layer_add_child(window_get_root_layer(main_window), s_canvas_layer);
 
-
-
     // Show the window on the watch, with animated = true
     window_stack_push(main_window, true);
 
     init_clic_callback();
-
-    init_accelerometer();
 }
 
 /*-------------------------- Graphic functions ------------------------*/
@@ -87,8 +68,6 @@ static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMas
 static void canvas_update_proc(Layer *layer, GContext *ctx)
 {
     int corner_radius = 0;
-    char *text_bottom = "steps";
-
 
     // Set the line color
     graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -121,9 +100,9 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     GFont font = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
     graphics_context_set_text_color(ctx, GColorBlack);
     char text_top[10];
-    snprintf(text_top, sizeof(text_top), "%d", pedometer_get_step_count(&meter));
-    if(pedometer_get_step_count(&meter)==0 || pedometer_get_step_count(&meter) == 1)
-        text_bottom = "step";
+    snprintf(text_top, sizeof(text_top), "%d", 100);
+    char *text_bottom = "steps";
+>>>>>>> Use background worker for accelerometer processing
 
     // Determine a reduced bounding box
     GRect txt_top_bounds = GRect(step_rect_bounds.origin.x,
@@ -167,10 +146,10 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
                                     bottom_rect_bounds.size.w-6,
                                     bottom_rect_bounds.size.h-4);
     // Draw an arc
-    graphics_draw_arc(ctx, reset_symbol_bounds, GOvalScaleModeFitCircle, 
+    graphics_draw_arc(ctx, reset_symbol_bounds, GOvalScaleModeFitCircle,
                       angle_start, angle_end);
 
-    
+
 }
 
 /*--------------------------- Clic fonctions --------------------------*/
@@ -196,51 +175,20 @@ static void up_single_click_handler(ClickRecognizerRef recognizer, void *context
 // event for clic down: reset the counter
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    pedometer_reset_step_count(&meter);
-    // Print the results on the watch
-    layer_mark_dirty(s_canvas_layer);
+    app_running = 0;
 }
 
-
-
-/*----------------------------------------------------------------------*/
-
-
-/*-----------------------Accelerometer fonctions------------------------*/
-void init_accelerometer(void)
+// event for clic select: reset the counter
+static void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    // Allow accelerometer event
-    accel_data_service_subscribe(10, accel_data_handler);
-    // Define accelerometer sampling rate
-    accel_service_set_sampling_rate(ACCEL_SAMPLING_100HZ);
+    //pedometer_reset_step_count(&meter);
 }
-
-// Function called every second that get data from the accelerometer
-void accel_data_handler(AccelData *data, uint32_t num_samples)
-{
-    uint32_t n;
-
-    // Send data from y axis to the podometer algorithm
-    if (app_running) {
-        for (n = 0; n < num_samples; n++) {
-            pedometer_process(&meter, data[n].z);
-        }
-
-        // Print the results on the watch
-        layer_mark_dirty(s_canvas_layer);
-    }
-}
-/*------------------------------------------------------------------------*/
 
 // deinit function called when the app is closed
 void deinit(void)
 {
-
     // Destroy layers and main window
     window_destroy(main_window);
-
-    // Stop Accelerometer
-    accel_data_service_unsubscribe();
 }
 
 int main(void)
