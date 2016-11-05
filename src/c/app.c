@@ -178,12 +178,6 @@ static void up_single_click_handler(ClickRecognizerRef recognizer, void *context
 // event for clic down: reset the counter
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    app_running = 0;
-}
-
-// event for clic select: reset the counter
-static void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
-{
     AppWorkerMessage message;
 
     // Send the data to the background app
