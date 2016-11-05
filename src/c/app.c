@@ -16,7 +16,6 @@ static void init_clic_callback(void);
 static void config_provider(void* context);
 static void up_single_click_handler(ClickRecognizerRef recognizer, void *context);
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context);
-static void select_single_click_handler(ClickRecognizerRef recognizer, void *context);
 static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMask mask);
 static void canvas_update_proc(Layer *layer, GContext *ctx);
 static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right);
@@ -88,6 +87,8 @@ static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMas
 static void canvas_update_proc(Layer *layer, GContext *ctx)
 {
     int corner_radius = 0;
+    char *text_bottom = "steps";
+
 
     // Set the line color
     graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -124,7 +125,8 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     graphics_context_set_text_color(ctx, GColorBlack);
     char text_top[10];
     snprintf(text_top, sizeof(text_top), "%d", pedometer_get_step_count(&meter));
-    char *text_bottom = "steps";
+    if(pedometer_get_step_count(&meter)==0)
+        text_bottom = "step";
 
     // Determine a reduced bounding box
     GRect txt_top_bounds = GRect(step_rect_bounds.origin.x,
@@ -204,26 +206,23 @@ static void config_provider(void* context)
 {
     window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
     window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
-    window_single_click_subscribe(BUTTON_ID_SELECT, select_single_click_handler);
 }
 
-// event for clic up: start counting steps
+// event for clic up: start/stop counting steps
 static void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
     app_running = !app_running;
 }
 
-// event for clic down: stop counting steps
+// event for clic down: reset the counter
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    app_running = 0;
+    pedometer_reset_step_count(&meter);
+    // Print the results on the watch
+    layer_mark_dirty(s_canvas_layer);
 }
 
-// event for clic select: reset the counter
-static void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
-{
-    pedometer_reset_step_count(&meter);
-}
+
 
 /*----------------------------------------------------------------------*/
 
