@@ -133,7 +133,18 @@ This allows the code to be tested on a development machine, which increases deve
 We also wrote some unit tests for the processing code (under the ``tests'' folder).
 This prevents bug and reduces time spent debugging on the Pebble.
 
-In order for the user to be still able to use his watch while having the pedometer on we implemented a background worker who is in fact the process counting the steps. This allow the user to go on the main window of the application to see his current number of steps and to turn the worker on and off and then go back on the watch window in order to be able to see the time. This is, in our opinion a critical function because no one is going to use an application that requires one to stop using all the other application of the watch.
+In order for the user to be still able to use his watch while having the pedometer on we implemented a background worker who is in charge of counting the steps.
+This separation allows the user to go on the main window of the application only to check his current number of steps and then leave the app to use other functions.
+This is, a critical function of the pedometer because no one is going to use an application that requires one to stop using all the other application of the watch.
+
+To communicate between the worker and the application a message queue is provided by the Pebble API.
+We implemented three messages for our use cases:
+\begin{enumerate}
+    \item The worker sends the step count and the current state (turned on or off) to the application.
+        This is used to update the screen.
+    \item The application sends one message to toggle the state between on and off to the worker.
+    \item The last message type is sent from the application to the worker to reset the step counter to zero.
+\end{enumerate}
 
 We didn't implement the data logging because \ldots
 
