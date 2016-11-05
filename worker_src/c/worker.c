@@ -34,6 +34,7 @@ static void accelerometer_cb(AccelData *data, uint32_t num_samples)
 
     AppWorkerMessage message = {
         .data0 = pedometer_get_step_count(&meter),
+        .data1 = meter_running,
     };
 
     // Send the data to the background app

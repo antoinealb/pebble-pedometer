@@ -10,6 +10,7 @@ static BitmapLayer *play_bitmap_layer;
 static BitmapLayer *pause_bitmap_layer;
 
 static unsigned int step_count = 0;
+static unsigned int app_running = true;
 static GBitmap *play_bitmap;
 static GBitmap *pause_bitmap;
 static GBitmap *reset_bitmap;
@@ -48,50 +49,30 @@ void init_main_window(void)
     reset_bitmap_layer = bitmap_layer_create(GRect(123, 135, 20, 20));
     bitmap_layer_set_compositing_mode(reset_bitmap_layer, GCompOpSet);
     bitmap_layer_set_bitmap(reset_bitmap_layer, reset_bitmap);
-    
-    layer_add_child(window_get_root_layer(main_window), 
+
+    layer_add_child(window_get_root_layer(main_window),
                     bitmap_layer_get_layer(reset_bitmap_layer));
-    
+
     //Bitmap for play
     play_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PLAY_BUTTON);
 
     play_bitmap_layer = bitmap_layer_create(GRect(123, 2, 20, 20));
     bitmap_layer_set_compositing_mode(play_bitmap_layer, GCompOpSet);
     bitmap_layer_set_bitmap(play_bitmap_layer, play_bitmap);
-    
-    layer_add_child(window_get_root_layer(main_window), 
-                    bitmap_layer_get_layer(play_bitmap_layer));
-    
+
+
     //Bitmap for pause
     pause_bitmap = gbitmap_create_with_resource(RESOURCE_ID_PAUSE_BUTTON);
 
     pause_bitmap_layer = bitmap_layer_create(GRect(123, 24, 20, 20));
     bitmap_layer_set_compositing_mode(pause_bitmap_layer, GCompOpSet);
     bitmap_layer_set_bitmap(pause_bitmap_layer, pause_bitmap);
-    
-    layer_add_child(window_get_root_layer(main_window), 
-                    bitmap_layer_get_layer(pause_bitmap_layer));
-    
+
+
     // Show the window on the watch, with animated = true
     window_stack_push(main_window, true);
 
     init_clic_callback();
-}
-
-/*-------------------------- Graphic functions ------------------------*/
-// Draw a triangle facing right and fill it
-static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right)
-{
-    // link the 3 points together
-    graphics_draw_line(ctx, top, bottom);
-    graphics_draw_line(ctx, top, right);
-    graphics_draw_line(ctx, bottom, right);
-}
-
-static void draw_pause(GContext *ctx, GPoint top_l, GPoint bottom_l, GPoint top_r, GPoint bottom_r)
-{
-    graphics_draw_line(ctx, top_l, bottom_l);
-    graphics_draw_line(ctx, top_r, bottom_r);
 }
 
 static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMask mask)
@@ -104,6 +85,15 @@ static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMas
 static void canvas_update_proc(Layer *layer, GContext *ctx)
 {
     int corner_radius = 0;
+
+
+    if (app_running) {
+        layer_add_child(layer,
+                        bitmap_layer_get_layer(pause_bitmap_layer));
+    } else {
+        layer_add_child(layer,
+                        bitmap_layer_get_layer(play_bitmap_layer));
+    }
 
     // Set the line color
     graphics_context_set_stroke_color(ctx, GColorBlack);
@@ -156,7 +146,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
                        GTextAlignmentCenter, NULL);
 
     graphics_context_set_stroke_width(ctx, 5);
-    
+
 }
 
 /*--------------------------- Clic fonctions --------------------------*/
@@ -197,7 +187,8 @@ static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
     switch (type) {
         case MESSAGE_STEP_COUNT:
             step_count = message->data0;
-            layer_mark_dirty(s_canvas_layer);
+            app_running = message->data1;
+            layer_remove_child_layers(s_canvas_layer);
             break;
 
         default:
@@ -211,10 +202,10 @@ void deinit(void)
     //destroy the bitmaps
     gbitmap_destroy(pause_bitmap);
     bitmap_layer_destroy(pause_bitmap_layer);
-    
+
     gbitmap_destroy(reset_bitmap);
     bitmap_layer_destroy(reset_bitmap_layer);
-    
+
     gbitmap_destroy(play_bitmap);
     bitmap_layer_destroy(play_bitmap_layer);
     // Destroy layers and main window
