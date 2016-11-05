@@ -19,7 +19,7 @@ static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMas
 static void canvas_update_proc(Layer *layer, GContext *ctx);
 static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right);
 static void draw_pause(GContext *ctx, GPoint top_l, GPoint bottom_l, GPoint top_r, GPoint bottom_r);
-static void messages_cb(uint16_t type, AppWorkerMessage *message);
+static void worker_message_cb(uint16_t type, AppWorkerMessage *message);
 
 
 void init_main_window(void)
