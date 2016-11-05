@@ -1,5 +1,6 @@
 #include <pebble_worker.h>
 #include "pedometer.h"
+#include "messages.h"
 
 static pedometer_t meter;
 static float filter_buffer[10];
@@ -25,6 +26,13 @@ static void accelerometer_cb(AccelData *data, uint32_t num_samples)
     for (n = 0; n < num_samples; n++) {
         pedometer_process(&meter, data[n].z);
     }
+
+    AppWorkerMessage message = {
+        .data0 = pedometer_get_step_count(&meter),
+    };
+
+    // Send the data to the background app
+    app_worker_send_message(MESSAGE_STEP_COUNT, &message);
 }
 
 static void worker_init()
@@ -37,8 +45,9 @@ static void worker_init()
     pedometer_init(&meter, filter_buffer, sizeof(filter_buffer) / sizeof(float),
                    threshold_buffer, sizeof(threshold_buffer) / sizeof(float));
     pedometer_set_hysteresis(&meter, 75);
+    
+    accelerometer_init();
 }
-
 
 static void worker_deinit()
 {

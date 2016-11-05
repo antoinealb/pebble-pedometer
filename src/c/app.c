@@ -1,4 +1,5 @@
 #include <pebble.h>
+#include "messages.h"
 
 #define NUM_SAMPLE 100
 
@@ -7,6 +8,7 @@ static Layer *s_canvas_layer;
 
 static int app_running;
 
+static unsigned int step_count = 0;
 
 static void init_clic_callback(void);
 static void config_provider(void* context);
@@ -17,6 +19,7 @@ static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMas
 static void canvas_update_proc(Layer *layer, GContext *ctx);
 static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right);
 static void draw_pause(GContext *ctx, GPoint top_l, GPoint bottom_l, GPoint top_r, GPoint bottom_r);
+static void messages_cb(uint16_t type, AppWorkerMessage *message);
 
 
 void init_main_window(void)
@@ -100,7 +103,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     GFont font = fonts_get_system_font(FONT_KEY_BITHAM_30_BLACK);
     graphics_context_set_text_color(ctx, GColorBlack);
     char text_top[10];
-    snprintf(text_top, sizeof(text_top), "%d", 100);
+    snprintf(text_top, sizeof(text_top), "%d", step_count);
     char *text_bottom = "steps";
 >>>>>>> Use background worker for accelerometer processing
 
@@ -181,7 +184,20 @@ static void down_single_click_handler(ClickRecognizerRef recognizer, void *conte
 // event for clic select: reset the counter
 static void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
-    //pedometer_reset_step_count(&meter);
+    // pedometer_reset_step_count(&meter);
+}
+
+static void worker_message_cb(uint16_t type, AppWorkerMessage *message)
+{
+    switch (type) {
+        case MESSAGE_STEP_COUNT:
+            step_count = message->data0;
+            layer_mark_dirty(s_canvas_layer);
+            break;
+
+        default:
+            break;
+    }
 }
 
 // deinit function called when the app is closed
@@ -193,6 +209,8 @@ void deinit(void)
 
 int main(void)
 {
+    app_worker_launch();
+    app_worker_message_subscribe(worker_message_cb);
 
     init_main_window();
 
