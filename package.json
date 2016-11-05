@@ -1,10 +1,10 @@
 {
-    "author": "flavien.bardyn@epfl.ch",
+    "author": "Albertelli, Benvenuti, Kaufmann",
     "dependencies": {},
     "keywords": [],
-    "name": "tp-system-engineering",
+    "name": "pedometer",
     "pebble": {
-        "displayName": "TP System Engineering",
+        "displayName": "Pedometer for systems engineering",
         "enableMultiJS": false,
         "messageKeys": [],
         "projectType": "native",
