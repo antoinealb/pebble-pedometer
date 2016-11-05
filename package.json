@@ -4,12 +4,20 @@
     "keywords": [],
     "name": "pedometer",
     "pebble": {
-        "displayName": "Pedometer for systems engineering",
+        "displayName": "Pedometer",
         "enableMultiJS": false,
         "messageKeys": [],
         "projectType": "native",
         "resources": {
-            "media": []
+            "media": [
+                {
+                    "file": "images/logo",
+                    "menuIcon": true,
+                    "name": "LOGO",
+                    "targetPlatforms": null,
+                    "type": "png"
+                }
+            ]
         },
         "sdkVersion": "3",
         "targetPlatforms": [
