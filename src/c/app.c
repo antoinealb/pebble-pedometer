@@ -109,13 +109,10 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     corner_radius = 8;
     graphics_fill_rect(ctx, step_rect_bounds, corner_radius, GCornersAll);
 
-    // Draw the 3 rectangles to indicate the functions of the buttons
+    // Draw the 2 rectangles to indicate the functions of the buttons
     GRect top_rect_bounds = GRect(124, 0, 20, 40);
     draw_rect(ctx, top_rect_bounds, corner_radius, GCornersBottom & GCornersLeft);
     graphics_fill_rect(ctx, top_rect_bounds, corner_radius, GCornersBottom & GCornersLeft);
-
-    GRect mid_rect_bounds = GRect(124, 61, 20, 46);
-    draw_rect(ctx, mid_rect_bounds, corner_radius, GCornersLeft);
 
     GRect bottom_rect_bounds = GRect(124, 128, 20, 40);
     draw_rect(ctx, bottom_rect_bounds, corner_radius, GCornersTop & GCornersLeft);
@@ -125,7 +122,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     graphics_context_set_text_color(ctx, GColorBlack);
     char text_top[10];
     snprintf(text_top, sizeof(text_top), "%d", pedometer_get_step_count(&meter));
-    if(pedometer_get_step_count(&meter)==0)
+    if(pedometer_get_step_count(&meter)==0 || pedometer_get_step_count(&meter) == 1)
         text_bottom = "step";
 
     // Determine a reduced bounding box
@@ -159,39 +156,21 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     GPoint bottom_r = GPoint(138, 30);
     draw_pause(ctx, top_l, bottom_l, top_r, bottom_r);
 
-    // See history button
-    font = fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD);
-    char *text = "Logs";
-    // Determine a reduced bounding box
-    GRect txt_bounds = GRect(mid_rect_bounds.origin.x,
-                             mid_rect_bounds.origin.y,
-                             mid_rect_bounds.size.w,
-                             mid_rect_bounds.size.h);
-    // Draw the text
-    graphics_draw_text(ctx,
-                       text,
-                       font,
-                       txt_bounds,
-                       GTextOverflowModeWordWrap,
-                       GTextAlignmentCenter,
-                       NULL);
+    // Reset button
 
-    // Store button
-    text = "Store";
-    // Determine a reduced bounding box
-    txt_bounds = GRect(bottom_rect_bounds.origin.x,
-                       bottom_rect_bounds.origin.y,
-                       bottom_rect_bounds.size.w,
-                       bottom_rect_bounds.size.h);
-    // Draw the text
-    graphics_draw_text(ctx,
-                       text,
-                       font,
-                       txt_bounds,
-                       GTextOverflowModeWordWrap,
-                       GTextAlignmentCenter,
-                       NULL);
+    int32_t angle_start = DEG_TO_TRIGANGLE(0);
+    int32_t angle_end = DEG_TO_TRIGANGLE(300);
 
+    //Create smaller bounds than the container
+    GRect reset_symbol_bounds = GRect(bottom_rect_bounds.origin.x+3,
+                                    bottom_rect_bounds.origin.y + 2,
+                                    bottom_rect_bounds.size.w-6,
+                                    bottom_rect_bounds.size.h-4);
+    // Draw an arc
+    graphics_draw_arc(ctx, reset_symbol_bounds, GOvalScaleModeFitCircle, 
+                      angle_start, angle_end);
+
+    
 }
 
 /*--------------------------- Clic fonctions --------------------------*/
