@@ -14,17 +14,18 @@ static pedometer_t meter;
 static float filter_buffer[10];
 static float threshold_buffer[25];
 
-void init_clic_callback(void);
-void config_provider(void* context);
-void up_single_click_handler(ClickRecognizerRef recognizer, void *context);
-void down_single_click_handler(ClickRecognizerRef recognizer, void *context);
-void select_single_click_handler(ClickRecognizerRef recognizer, void *context);
+static void init_clic_callback(void);
+static void config_provider(void* context);
+static void up_single_click_handler(ClickRecognizerRef recognizer, void *context);
+static void down_single_click_handler(ClickRecognizerRef recognizer, void *context);
+static void select_single_click_handler(ClickRecognizerRef recognizer, void *context);
+static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMask mask);
+static void canvas_update_proc(Layer *layer, GContext *ctx);
+static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right);
+static void draw_pause(GContext *ctx, GPoint top_l, GPoint bottom_l, GPoint top_r, GPoint bottom_r);
 
-void init_accelerometer(void);
-void accel_data_handler(AccelData *data, uint32_t num_samples);
-
-
-
+static void init_accelerometer(void);
+static void accel_data_handler(AccelData *data, uint32_t num_samples);
 
 void init_main_window(void)
 {
@@ -62,8 +63,6 @@ void init_main_window(void)
 
     init_accelerometer();
 }
-
-
 
 /*-------------------------- Graphic functions ------------------------*/
 // Draw a triangle facing right and fill it
@@ -196,14 +195,14 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
 }
 
 /*--------------------------- Clic fonctions --------------------------*/
-void init_clic_callback(void)
+static void init_clic_callback(void)
 {
     // Assign specific clic function to the main window
     window_set_click_config_provider(main_window, config_provider);
 }
 
 // Assign focus for different type of clics
-void config_provider(void* context)
+static void config_provider(void* context)
 {
     window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
     window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
@@ -211,26 +210,24 @@ void config_provider(void* context)
 }
 
 // event for clic up: start counting steps
-void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
+static void up_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
     app_running = !app_running;
 }
 
 // event for clic down: stop counting steps
-void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
+static void down_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
     app_running = 0;
 }
 
 // event for clic select: reset the counter
-void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
+static void select_single_click_handler(ClickRecognizerRef recognizer, void *context)
 {
     pedometer_reset_step_count(&meter);
 }
 
 /*----------------------------------------------------------------------*/
-
-
 
 
 /*-----------------------Accelerometer fonctions------------------------*/
@@ -259,18 +256,22 @@ void accel_data_handler(AccelData *data, uint32_t num_samples)
 }
 /*------------------------------------------------------------------------*/
 
-
-
-
 // deinit function called when the app is closed
 void deinit(void)
 {
 
     // Destroy layers and main window
-//    text_layer_destroy(background_layer);
-//    text_layer_destroy(step_display_layer);
     window_destroy(main_window);
 
     // Stop Accelerometer
     accel_data_service_unsubscribe();
+}
+
+int main(void)
+{
+
+    init_main_window();
+
+    app_event_loop();
+    deinit();
 }
