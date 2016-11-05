@@ -11,19 +11,19 @@
         "resources": {
             "media": [
                 {
+                    "file": "images/reset_rrows.png",
+                    "name": "RESET_ARROWS",
+                    "targetPlatforms": [
+                        "aplite"
+                    ],
+                    "type": "bitmap"
+                },
+                {
                     "file": "images/logo",
                     "menuIcon": true,
                     "name": "LOGO",
                     "targetPlatforms": null,
                     "type": "png"
-                 },
-                 {
-                    "file": "images/font-awesome_4-6-3_pause_20_0_000000_none.png",
-                    "name": "PAUSE_BUTTON",
-                    "targetPlatforms": [
-                        "aplite"
-                    ],
-                    "type": "bitmap"
                 },
                 {
                     "file": "images/font-awesome_4-6-3_play_20_0_000000_none.png",
@@ -34,8 +34,8 @@
                     "type": "bitmap"
                 },
                 {
-                    "file": "images/reset_rrows.png",
-                    "name": "RESET_ARROWS",
+                    "file": "images/font-awesome_4-6-3_pause_20_0_000000_none.png",
+                    "name": "PAUSE_BUTTON",
                     "targetPlatforms": [
                         "aplite"
                     ],
