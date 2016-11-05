@@ -51,7 +51,7 @@ The need tied to the user of pedometer are the following:
 	\item Have a mean to count his footsteps over the day.
 	\item Have a mean to easily read his current footsteps for the day.
 	\item Have a mean to access an history of his footsteps over the past days.
-	\item Must not experience discomfort due to the use of the device.  \ldots
+	\item Must not experience discomfort due to the use of the device.
 \end{itemize}
 
 From those needs we derived the following functions:
@@ -61,6 +61,7 @@ From those needs we derived the following functions:
 	\item Update the number of footsteps frequently (every 1-2 seconds).
 	\item Display the number of footsteps for the current day.
 	\item Offer a mean to reset the current number of footsteps.
+	\item Is able to count footsteps in the background.
 	\item Offer a mean to look at the history of footsteps for the past week.
 	\item Do not reduce the battery life of the pebble watch noticeably.
 	\item Do not result in an overheating of the watch.
@@ -131,5 +132,11 @@ This allows the code to be tested on a development machine, which increases deve
 
 We also wrote some unit tests for the processing code (under the ``tests'' folder).
 This prevents bug and reduces time spent debugging on the Pebble.
+
+In order for the user to be still able to use his watch while having the pedometer on we implemented a background worker who is in fact the process counting the steps. This allow the user to go on the main window of the application to see his current number of steps and to turn the worker on and off and then go back on the watch window in order to be able to see the time. This is, in our opinion a critical function because no one is going to use an application that requires one to stop using all the other application of the watch.
+
+We didn't implement the data logging because \ldots
+
+\section{Interface design}
 
 \end{document}
