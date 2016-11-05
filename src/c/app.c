@@ -138,11 +138,11 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
     int32_t angle_start = DEG_TO_TRIGANGLE(0);
     int32_t angle_end = DEG_TO_TRIGANGLE(300);
 
-    //Create smaller bounds than the container
-    GRect reset_symbol_bounds = GRect(bottom_rect_bounds.origin.x+3,
-                                    bottom_rect_bounds.origin.y + 2,
-                                    bottom_rect_bounds.size.w-6,
-                                    bottom_rect_bounds.size.h-4);
+    // Create smaller bounds than the container
+    GRect reset_symbol_bounds = GRect(bottom_rect_bounds.origin.x + 3,
+                                      bottom_rect_bounds.origin.y + 2,
+                                      bottom_rect_bounds.size.w - 6,
+                                      bottom_rect_bounds.size.h - 4);
     // Draw an arc
     graphics_draw_arc(ctx, reset_symbol_bounds, GOvalScaleModeFitCircle,
                       angle_start, angle_end);
