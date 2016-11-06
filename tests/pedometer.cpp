@@ -82,3 +82,31 @@ TEST(PedometerTestGroup, CanProcessFallingWithHysteresis)
     pedometer_process(&pedometer, -1.);
     CHECK_EQUAL(PEDOMETER_ACC_FALLING, pedometer.state);
 }
+
+TEST_GROUP(PedometerOverflow)
+{
+    pedometer_t pedometer;
+    float filter_buffer[1];
+    float threshold_buffer[2];
+
+    void setup()
+    {
+        memset(filter_buffer, 0, sizeof(filter_buffer));
+        memset(threshold_buffer, 0, sizeof(threshold_buffer));
+        pedometer_init(&pedometer,
+                       filter_buffer, 1,
+                       threshold_buffer, 2);
+    }
+};
+
+TEST(PedometerOverflow, DoesntOverflow)
+{
+    const int count = 500000;
+
+    for (int i = 0; i < count; i++) {
+        pedometer_process(&pedometer, 1.);
+        pedometer_process(&pedometer, -1.);
+    }
+
+    CHECK_EQUAL(count, pedometer_get_step_count(&pedometer));
+}
