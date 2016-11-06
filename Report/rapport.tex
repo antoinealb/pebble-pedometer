@@ -146,9 +146,12 @@ We implemented three messages for our use cases:
     \item The last message type is sent from the application to the worker to reset the step counter to zero.
 \end{enumerate}
 
-We didn't implement the data logging because \ldots
-
 \section{Interface design}
+Figure \ref{fig:interface} shows a screenshot of the interface when the pedometer is running. We wanted to display the 
+minimum amount of infos while still providing the user with the necessary ones in order to instantly know how much 
+steps he had already walked and the functions of the different buttons. In order to communicate them we used commonly 
+known symbols such as small ``play'' and ``pause'' icons for the top button and circling arrows for the bottom one, 
+used to reset the count.
 \begin{figure}[h]
     \centering
     \includegraphics{screenshot}
