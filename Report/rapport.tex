@@ -46,6 +46,7 @@
 \section{Introduction}
 In the context of our System Engineering class we had to design and code a pedometer for a pebble smart	watch. This document explains our design process and presents the final results
 \section{Requirements}
+\label{requirements}
 The need tied to the user of pedometer are the following:
 \begin{itemize}
 	\item Have a mean to count his footsteps over the day.
@@ -146,8 +147,6 @@ We implemented three messages for our use cases:
     \item The last message type is sent from the application to the worker to reset the step counter to zero.
 \end{enumerate}
 
-We didn't implement the data logging because \ldots
-
 \section{Interface design}
 \begin{figure}[h]
     \centering
@@ -155,6 +154,14 @@ We didn't implement the data logging because \ldots
     \caption{Screenshot of our interface showcasing the reset and play/pause button}
     \label{fig:interface}
 \end{figure}
+
+\section{Possible improvements}
+
+Looking back at our requirements (section \ref{requirements}) we can see that our current implementation could be improved.
+Especially data logging could be implemented, although we did not have enough time to design a user interface around it.
+
+The battery consumption of the device should also be measured and optimized.
+According to the Pebble Developer guide\footnote{\url{https://developer.pebble.com/guides/best-practices/conserving-battery-life/}}, lowering the display refresh rate as well as the accelerometer batch size could help here.
 
 
 \end{document}
