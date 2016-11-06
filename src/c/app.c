@@ -5,28 +5,23 @@
 
 static Window *main_window;
 static Layer *s_canvas_layer;
+
+static unsigned int step_count = 0;
+static unsigned int app_running = true;
+
+static GBitmap *play_bitmap;
+static GBitmap *pause_bitmap;
+static GBitmap *reset_bitmap;
 static BitmapLayer *reset_bitmap_layer;
 static BitmapLayer *play_bitmap_layer;
 static BitmapLayer *pause_bitmap_layer;
 
-static unsigned int step_count = 0;
-static unsigned int app_running = true;
-static GBitmap *play_bitmap;
-static GBitmap *pause_bitmap;
-static GBitmap *reset_bitmap;
-
-
-static void init_clic_callback(void);
-static void config_provider(void* context);
-
+static void button_config_provider(void* context);
 static void up_single_click_handler(ClickRecognizerRef recognizer, void *context);
 static void down_single_click_handler(ClickRecognizerRef recognizer, void *context);
 static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMask mask);
 static void canvas_update_proc(Layer *layer, GContext *ctx);
-static void draw_triangle(GContext *ctx, GPoint top, GPoint bottom, GPoint right);
-static void draw_pause(GContext *ctx, GPoint top_l, GPoint bottom_l, GPoint top_r, GPoint bottom_r);
 static void worker_message_cb(uint16_t type, AppWorkerMessage *message);
-
 
 void init_main_window(void)
 {
@@ -72,7 +67,8 @@ void init_main_window(void)
     // Show the window on the watch, with animated = true
     window_stack_push(main_window, true);
 
-    init_clic_callback();
+    // Assign specific clic function to the main window
+    window_set_click_config_provider(main_window, button_config_provider);
 }
 
 static void draw_rect(GContext *ctx, GRect bounds, int corner_radius, GCornerMask mask)
@@ -149,15 +145,8 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
 
 }
 
-/*--------------------------- Clic fonctions --------------------------*/
-static void init_clic_callback(void)
-{
-    // Assign specific clic function to the main window
-    window_set_click_config_provider(main_window, config_provider);
-}
-
 // Assign focus for different type of clics
-static void config_provider(void* context)
+static void button_config_provider(void* context)
 {
     window_single_click_subscribe(BUTTON_ID_UP, up_single_click_handler);
     window_single_click_subscribe(BUTTON_ID_DOWN, down_single_click_handler);
