@@ -93,6 +93,7 @@ static void canvas_update_proc(Layer *layer, GContext *ctx)
 
     // Set the line color
     graphics_context_set_stroke_color(ctx, GColorBlack);
+
     // Set the fill color
     graphics_context_set_fill_color(ctx, GColorBlack);
     GRect bckgrnd_rect = GRect(0, 0, 144, 168);
@@ -197,6 +198,7 @@ void deinit(void)
 
     gbitmap_destroy(play_bitmap);
     bitmap_layer_destroy(play_bitmap_layer);
+
     // Destroy layers and main window
     window_destroy(main_window);
 }
