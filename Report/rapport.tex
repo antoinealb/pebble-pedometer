@@ -112,8 +112,8 @@ It then compares the data to a threshold calculated using an average over the la
 When the data crosses the threshold (with an hysteresis), one step is counted.
 Compared to the previous algorithm, this result in a threshold reacting more smoothly which improves the precision.
 
-Its performance is very good: on test data, it is within 10\% of the correct value.
-Moreover, it is easy to implement correctly, doesn't consume a lot of processing power nor RAM and only has a few parameters to tune (filter frequency, threshold history size and hysteresis).
+Its performance is good: on test data, it is within 10\% of the correct value.
+Moreover, it is easy to implement correctly, doesn't consume a lot of processing power nor RAM and only has a few parameters to tune (lowpass cutoff, threshold history size and hysteresis).
 It is also pretty insensitive to variations in physical parameters across users.
 
 \begin{figure}[h]
@@ -130,15 +130,14 @@ It is also pretty insensitive to variations in physical parameters across users.
 The processing code was first written in Python, then in C.
 The code was written to be very portable by separating platform-dependent code from processing functions.
 This allows the code to be tested on a development machine, which increases development velocity.
+We also wrote unit tests for the processing code (under the ``tests'' folder).
+This prevents bugs and reduces time spent debugging on the Pebble.
 
-We also wrote some unit tests for the processing code (under the ``tests'' folder).
-This prevents bug and reduces time spent debugging on the Pebble.
-
-In order for the user to be still able to use his watch while having the pedometer on we implemented a background worker who is in charge of counting the steps.
+Being able to count the steps while using other functions of the watch was a critical function (see section \ref{requirements}).
+To do so, the processing algorithm is running in a background worker, while the pedometer user interface runs in an application.
 This separation allows the user to go on the main window of the application only to check his current number of steps and then leave the app to use other functions.
-This is, a critical function of the pedometer because no one is going to use an application that requires one to stop using all the other application of the watch.
 
-To communicate between the worker and the application a message queue is provided by the Pebble API.
+To communicate between the worker and the application a message queue is used\footnote{\url{https://developer.pebble.com/guides/events-and-services/background-worker/}}.
 We implemented three messages for our use cases:
 \begin{enumerate}
     \item The worker sends the step count and the current state (turned on or off) to the application.
@@ -163,7 +162,7 @@ used to reset the count.
 \section{Possible improvements}
 
 Looking back at our requirements (section \ref{requirements}) we can see that our current implementation could be improved.
-Especially data logging could be implemented, although we did not have enough time to design a user interface around it.
+For example, data logging could be implemented using Pebble's Storage API\footnote{\url{https://developer.pebble.com/guides/events-and-services/persistent-storage/}}, but we did not have enough time to design a user interface around it.
 
 The battery consumption of the device should also be measured and optimized.
 According to the Pebble Developer guide\footnote{\url{https://developer.pebble.com/guides/best-practices/conserving-battery-life/}}, lowering the display refresh rate as well as the accelerometer batch size could help here.
